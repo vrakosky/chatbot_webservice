@@ -1,71 +1,95 @@
 <html>
-  <meta charset="utf-8"/>
-  <head>
+<meta charset="utf-8" />
+
+<head>
     <title> Test client for chat </title>
-  </head>
+</head>
 
 <script>
-
-  function readMessages() {
-    // Run the async request and chain promises
-    // see https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
-    // TODO: The following code is a bit ugly, rewrite it using async/await if you wish so
-    fetch('http://localhost:8080/api/messages')
-      .then(
-        // Js will call the following  function when response arrives.
-        function (response) {
-          // returns a Promise
-          return response.json();
-        }
-      )
-      .then(
-         // Js will call this function when json parsing is finished
-        function(messages) {
-          return renderMessages(messages);
-        }
-      )
-      .catch(
-        function(error) {
-          console.log('Error ' + error);
-        }
-      );
-  }
-
-  // run readMessages every second 
-  setInterval(readMessages, 1000);
-
-  // loop over messages and update the corresponding div
-  function renderMessages(messages) {
-
-    let div = document.getElementById("div-with-messages");
-    let messagesHtml = "";
-    for (var i = 0; i < messages.length; i++) {
-      let m = messages[i];
-      // JSON cannot have a date object inside, so we should
-      // reconstruct a new Date from string stored inside JSON
-      let date = new Date(m.date);
-      let dateForHuman = date.toLocaleString();
-      messagesHtml = messagesHtml + '<i>' + dateForHuman + '</i> ' +
-        m.text + '<br>';
+    function readMessages() {
+        // Run the async request and chain promises
+        // see https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
+        // TODO: The following code is a bit ugly, rewrite it using async/await if you wish so
+        fetch('http://localhost:8080/api/messages')
+            .then(
+                // Js will call the following  function when response arrives.
+                function(response) {
+                    // returns a Promise
+                    return response.json();
+                }
+            )
+            .then(
+                // Js will call this function when json parsing is finished
+                function(messages) {
+                    return renderMessages(messages);
+                }
+            )
+            .catch(
+                function(error) {
+                    console.log('Error ' + error);
+                }
+            );
     }
-    div.innerHTML = messagesHtml;
-  }
 
+    // run readMessages every second 
+    setInterval(readMessages, 1000);
 
+    // loop over messages and update the corresponding div
+    function renderMessages(messages) {
+        let div = document.getElementById("div-with-messages");
+        let messagesHtml = "";
+        for (var i = 0; i < messages.length; i++) {
+            let m = messages[i];
+            // JSON cannot have a date object inside, so we should
+            // reconstruct a new Date from string stored inside JSON
+            let date = new Date(m.date);
+            let dateForHuman = date.toLocaleString();
+            messagesHtml = messagesHtml + '<i><small>' + dateForHuman + '</small></i> ' +
+                m.text + '<br>';
+        }
+        div.innerHTML = messagesHtml;
+    }
+
+    function clickPress(event) {
+        // if user pressed [Enter]
+        if (event.keyCode == 13) {
+            sendMessage();
+        }
+    }
+
+    // use async/await to produce a good, readable code
+    // https://medium.com/@ThatGuyTinus/callbacks-vs-promises-vs-async-await-f65ed7c2b9b4
+    async function sendMessage() {
+        let input = document.getElementById("new-message");
+        let text = input.value;
+
+        try {
+            // send the message and wait for the response
+            await fetch("http://localhost:8080/api/new-message", {
+                method: "POST",
+                body: text
+            });
+
+            // clear input
+            input.value = "";
+
+        } catch (error) {
+
+            // in case of error, we alert user
+            alert(error.message);
+        }
+    }
 </script>
 
 <body>
 
-  <h1> Messages </h1>
-  
-  <div id=div-with-messages>
-  	<!-- Here need to put JS code to display message with output()-->
-  </div>
+    <h1> Messages </h1>
 
+    <div id=div-with-messages>
+        Loading...
+    </div>
 
-  <input type=text id=new>
-
-
+    <input type=text id=new-message onkeypress="clickPress(event)">
 
 </body>
 

@@ -22,6 +22,17 @@ public class ChatController {
         Message m = new Message(text);
         System.out.println(m.getText());
         messages.add(m);
+
+    //Call the simple robot
+    chatBotReponse(text);
+    }
+
+    //Simple chatbot for testing
+    void chatBotReponse (String text) {
+        if (text.equals("meteo")) {
+            Message reponse = new Message(text+" : Il pleut");
+            messages.add(reponse);
+        }
     }
 
 

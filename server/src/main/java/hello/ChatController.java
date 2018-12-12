@@ -22,19 +22,7 @@ public class ChatController {
         Message m = new Message(text);
         System.out.println(m.getText());
         messages.add(m);
-
-    //Call the simple robot
-    chatBotReponse(text);
     }
-
-    //Simple chatbot for testing
-    void chatBotReponse (String text) {
-        if (text.equals("meteo")) {
-            Message reponse = new Message(text+" : Il pleut");
-            messages.add(reponse);
-        }
-    }
-
 
     // Our client is not on the same server, so we need to
     @CrossOrigin // allow request from all origins
@@ -43,5 +31,10 @@ public class ChatController {
     //                             method = RequestMethod.GET)
     public Queue<Message> messages() {
         return messages;
+
+    @GetMapping("/testing/")   
+    public String random() {
+        return "test";
+    }
     }
 }

@@ -1,3 +1,8 @@
+    var colors = [
+    '#2196F3', '#32c787', '#00BCD4', '#ff5652',
+    '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
+];
+
     function readMessages() {
         // Run the async request and chain promises
         // see https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
@@ -131,6 +136,17 @@ function chatBotReponse(message) {
         sendMessageBot("My pleasure to tell you more.");
         sendMessageBot(reponse);
     }
+}
+
+
+function getAvatarColor(messageSender) {
+    var hash = 0;
+    for (var i = 0; i < messageSender.length; i++) {
+        hash = 31 * hash + messageSender.charCodeAt(i);
+    }
+
+    var index = Math.abs(hash % colors.length);
+    return colors[index];
 }
 
     //TRACKING IP

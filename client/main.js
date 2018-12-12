@@ -87,6 +87,52 @@
         }
     }
 
+
+//CHATBOT CLIENT
+function chatBotReponse(message) {
+    if (/hello|hi|hey|bonjour|salut|welcome/.test(message)) {
+        let reponse = "Welcome, I'm Vincedroid, the chatbot of Vincent. Ask me any question about professional stuff and more. If your question isn't recognized, try a keyword.";
+        sendMessageBot(reponse);
+    } else if (/job|plan/.test(message)){
+        let reponse = "He participated to a Medical project for one year in Malaysia as an Engineer developer for the purpose of developing a neurofeedback to develop attention (ADHD). In France, he was affiliated with \"Ewill\" company as a Web developer. He is currently looking for a six-month engineering exchange for April 2019 in France or abroad. For any suggestion, you can leave a message to : vince.candappane@gmail.com";
+        sendMessageBot(reponse);
+    }else if (/career|school|education/.test(message)){
+        let reponse = "Vincent finished a Technical Degree in Applied Engineering Computer Science in 2014. Today, Vincent is a student in the 5th year of the School of Computer and Electronics Engineering (ESIREM) and had recently participated in the creation of computer projects as well in France and in Malaysia. Also, he is preparing a big changes coming from investments and creating an innovative project based on Artificial Intelligence.";
+        sendMessageBot(reponse);
+    } else if (/manager|freelancer/.test(message)){
+        let reponse = "Vincent has experience in leading project teams. He would like to advise and support organizations in accomplish the full benefits of the new technology through change management. He would like to lead a team working on the different components of change activities: an innovative campaign, a development program, etc. He hasn't been in a people lead role yet, and is looking for directing a small project team.";
+        sendMessageBot(reponse);
+    } else if (/talent|interaction/.test(message)){
+        let reponse = "Vincent strengths are starting up (change) initiatives, creative and innovative communication, entreprener, public speaking, visualization enthusiasm.";
+        sendMessageBot(reponse);
+    } else if (/skills/.test(message)){
+        let reponse = "Change management, facilitation knowledge, project management, team coordination, Lean and communication.";
+        sendMessageBot(reponse);
+    } else if (/travel|far|culture/.test(message)){
+        let reponse = "Vincent has experience with change projects and innovation campaigns abroad. For the next missions, opportunity for short assignments abroad is appreciated.";
+        sendMessageBot(reponse);
+    } else if (/live|where/.test(message)){
+        let reponse = "Vincent is situated in Paris, France. He can commute to any location when it is needed.";
+        sendMessageBot(reponse);
+    } else if (/style|method/.test(message)){
+        let reponse = "Vincent likes making the digital transformation tangible for the employees in a Agile environment. So tasks automation and training programs is in the core of success. Coming into contact with many different people. He likes the international character of the work.";
+        sendMessageBot(reponse);
+    } else if (/hobbies|passion/.test(message)){
+        let reponse = "In the spare time of Vincent, he loves to listen to music, watch movies, read books and hang out with friends. He also likes to go out on adventures with friends and family. Vincent love to be up-to-date with digital and future technology. He loves innovation and is ready for the excited times coming when virtual assistants, AI and IoT become bigger !";
+        sendMessageBot(reponse);
+    } else if (/I LOVE YOU|i love you|love you|love you/.test(message)){
+        let reponse = "You are the wind beneath my wings";
+        sendMessageBot(reponse);
+    } else if (/fuck|shit|suck/.test(message)){
+        let reponse = "Hmm, you're using some expressions I don't like. I'll gently ignore that one.";
+        sendMessageBot(reponse);
+    } else if (/help/.test(message)){
+        let reponse = "Need some help ? Try asking questions like a recruiter: ask me about, career, talents, current job, previous job, hobbies, commute, travel, etc (Here an exemple if you tape a sentence with the keyword \"job\")";
+        sendMessageBot("My pleasure to tell you more.");
+        sendMessageBot(reponse);
+    }
+}
+
     //TRACKING IP
 function ipLookUp () {
   let countryCode = null;

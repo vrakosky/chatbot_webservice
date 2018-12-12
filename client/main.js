@@ -150,8 +150,8 @@ function onError(error) {
     connectingElement.style.color = 'red';
 }
 
-// run readMessages every second 
-setInterval(readMessages, 600);
+// run readMessages every half-second 
+setInterval(readMessages, 500);
 
 //COOKIE
 function setCookie(cname,cvalue,exdays) {

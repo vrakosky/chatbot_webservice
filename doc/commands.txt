@@ -1,0 +1,35 @@
+COMMAND 1 : 
+cd server
+uname -a
+ls .gradle/
+./gradlew bootRun
+./gradlew dependeces
+
+COMMAND 2 : 
+installing brew : /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+installing jq : brew install jq
+
+COMMAND 3 : 
+curl -i http://localhost:8080/api/get-messages
+curl -D -i http://localhost:8080//where/IS/A/FILE.txt
+./new-message Hi
+curl -D -i http://localhost:8080/api/messages  | jq .
+
+COMMAND 4 : 
+curl -i http://localhost:8080/greeting?name=toto&par=titi
+
+
+Prerequies to install :
+0) Groovy : To install dependencies
+1) Spring Boot
+2) jq
+
+
+SCHEMA TO UNDERSTAND MESSAGE TRANSFER :
+
+1                                   traitement de la reponse
+2 SEND data to server               1
+3                                   2
+4
+5
+

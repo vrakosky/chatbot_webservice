@@ -1,96 +1,199 @@
-    var colors = [
+'use strict';
+
+var usernamePage = document.querySelector('#username-page');
+var chatPage = document.querySelector('#chat-page');
+var usernameForm = document.querySelector('#usernameForm');
+var messageForm = document.querySelector('#messageForm');
+var messageInput = document.querySelector('#message');
+var messageArea = document.querySelector('#messageArea');
+var connectingElement = document.querySelector('.connecting');
+
+var username = null;
+
+var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-    function readMessages() {
-        // Run the async request and chain promises
-        // see https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
-        // TODO: The following code is a bit ugly, rewrite it using async/await if you wish so
-        fetch('http://localhost:8080/api/messages')
-            .then(
-                // Js will call the following  function when response arrives.
-                function(response) {
-                    // returns a Promise
-                    return response.json();
-                }
-            )
-            .then(
-                // Js will call this function when json parsing is finished
-                function(messages) {
-                    return renderMessages(messages);
-                }
-            )
-            .catch(
-                function(error) {
-                    console.log('Error ' + error);
-                }
-            );
+function connect(event) {
+    username = document.querySelector('#name').value.trim();
+    if(username) {
+        usernamePage.classList.add('hidden');
+        chatPage.classList.remove('hidden');
+        //connectingElement.classList.add('hidden');
+    }
+    event.preventDefault();
+}
+
+function onMessageReceived(user, message) {
+  var messageElement = document.createElement('li');
+  messageElement.classList.add('chat-message');
+
+  var avatarElement = document.createElement('i');
+  var avatarText = document.createTextNode(user[0]);
+  avatarElement.appendChild(avatarText);
+  avatarElement.style['background-color'] = getAvatarColor(user);
+  messageElement.appendChild(avatarElement);
+
+  //Select the correspondant flag
+  let countryCode =  localStorage.getItem('countryCode');
+  let flag = selectFlag(countryCode);
+
+  //User name
+  var usernameElement = document.createElement('span');
+  var usernameText = document.createTextNode(user +' from  '+ flag + '['+countryCode+']');
+  usernameElement.appendChild(usernameText);
+  messageElement.appendChild(usernameElement);
+
+
+  //User message
+  var textElement = document.createElement('p');
+  var messageText = document.createTextNode(message);
+  textElement.appendChild(messageText);
+
+  messageElement.appendChild(textElement);
+
+  messageArea.appendChild(messageElement);
+  messageArea.scrollTop = messageArea.scrollHeight;
+}
+
+function renderMessages(messages) {
+  let message = messages[messages.length - 1];
+  var actualMessage = localStorage.getItem('items1');
+  let date = new Date(message.date);
+  let dateForHuman = date.toLocaleString();
+  let dateISO = date.toISOString();
+  let diplayMessage = dateForHuman + ' : ' + message.text;
+
+   if (message.date != actualMessage){
+      ipLookUp ();
+      onMessageReceived(message.user,diplayMessage);
+      localStorage.setItem('items1', message.date);
+   }
+    chatBotReponse(message.text);
+}
+
+//Calling renderMessage and fetching to server
+function readMessages() {
+fetch('http://localhost:8080/api/messages')
+  .then(
+    function (response) {
+      return response.json();
+    }
+  )
+  .then(
+    function(messages) {
+      return renderMessages(messages);
+    }
+  )
+  .catch(
+    function(error) {
+      console.log('Error ' + error);
+      onError(error);
+    }
+  );
+}
+
+//Sending message
+async function sendMessage() {
+  connectingElement.classList.add('hidden');
+  var messageContent = messageInput.value.trim();
+
+  var fullMessage = {
+    user: username,
+    txt: messageInput.value,
+  };
+
+  if(messageContent){
+    try {
+        await fetch("http://localhost:8080/api/new-message",
+          {
+            method: "POST",
+            body: JSON.stringify(fullMessage)
+          });
+        } catch (error) {alert(error.message);}
+        messageInput.value = '';
+  }
+}
+
+//Sending message
+async function sendMessageBot(message) {
+  connectingElement.classList.add('hidden');
+
+  var fullMessage = {
+    user: "BOT"+String.fromCodePoint(0x1F916),
+    txt: message,
+  };
+
+    try {
+        await fetch("http://localhost:8080/api/new-message",
+          {
+            method: "POST",
+            body: JSON.stringify(fullMessage)
+          });
+        } catch (error) {alert(error.message);}
+        messageInput.value = '';
+}
+
+function getAvatarColor(messageSender) {
+    var hash = 0;
+    for (var i = 0; i < messageSender.length; i++) {
+        hash = 31 * hash + messageSender.charCodeAt(i);
     }
 
-    // run readMessages every second 
-    setInterval(readMessages, 1000);
+    var index = Math.abs(hash % colors.length);
+    return colors[index];
+}
 
-    // loop over messages and update the corresponding div
-    function renderMessages(messages) {
-        let div = document.getElementById("div-with-messages");
-        let messagesHtml = "";
-        for (var i = 0; i < messages.length; i++) {
-            let m = messages[i];
-            // JSON cannot have a date object inside, so we should
-            // reconstruct a new Date from string stored inside JSON
-            let date = new Date(m.date);
-            let dateForHuman = date.toLocaleString();
-            messagesHtml = messagesHtml + '<i><small>' + dateForHuman + '</small></i> ' +
-                m.text + '<br>';
-        }
-        let lastMessage = messages[messages.length - 1];
-        chatBotReponse(lastMessage.text);
-        div.innerHTML = messagesHtml;
+function onError(error) {
+    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+    connectingElement.style.color = 'red';
+}
+
+// run readMessages every second 
+setInterval(readMessages, 600);
+
+//COOKIE
+function setCookie(cname,cvalue,exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
     }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
 
-    //SIMPLE CHATBOT CLIENT
-    function chatBotReponse(text) {
-      if (text == "meteo") {
-          let reponse = "Il pleut : " + text;
-          sendMessageBot(reponse);
-      } else if (text == "hello") {
-          let reponse = "Hello You ";
-          sendMessageBot(reponse);
-      } 
-      else {
-          sendMessageBot(text);
+//TRACKING IP
+function ipLookUp () {
+  let countryCode = null;
+  $.ajax('http://ip-api.com/json')
+  .then(
+      function success(response) {
+          console.log('User\'s Location Data is ', response);
+          countryCode = response.countryCode.toString();
+          localStorage.setItem('countryCode', countryCode);
+      },
+
+      function fail(data, status) {
+          console.log('Request failed.  Returned status of',
+                      status);
       }
-
-    function clickPress(event) {
-        // if user pressed [Enter]
-        if (event.keyCode == 13) {
-            sendMessage();
-        }
-    }
-
-    // use async/await to produce a good, readable code
-    // https://medium.com/@ThatGuyTinus/callbacks-vs-promises-vs-async-await-f65ed7c2b9b4
-    async function sendMessage() {
-        let input = document.getElementById("new-message");
-        let text = input.value;
-
-        try {
-            // send the message and wait for the response
-            await fetch("http://localhost:8080/api/new-message", {
-                method: "POST",
-                body: text
-            });
-
-            // clear input
-            input.value = "";
-
-        } catch (error) {
-
-            // in case of error, we alert user
-            alert(error.message);
-        }
-    }
+  );
+}
 
 
 //CHATBOT CLIENT
@@ -136,35 +239,6 @@ function chatBotReponse(message) {
         sendMessageBot("My pleasure to tell you more.");
         sendMessageBot(reponse);
     }
-}
-
-
-function getAvatarColor(messageSender) {
-    var hash = 0;
-    for (var i = 0; i < messageSender.length; i++) {
-        hash = 31 * hash + messageSender.charCodeAt(i);
-    }
-
-    var index = Math.abs(hash % colors.length);
-    return colors[index];
-}
-
-    //TRACKING IP
-function ipLookUp () {
-  let countryCode = null;
-  $.ajax('http://ip-api.com/json')
-  .then(
-      function success(response) {
-          console.log('User\'s Location Data is ', response);
-          countryCode = response.countryCode.toString();
-          localStorage.setItem('countryCode', countryCode);
-      },
-
-      function fail(data, status) {
-          console.log('Request failed.  Returned status of',
-                      status);
-      }
-  );
 }
 
 function selectFlag(flag){
@@ -1162,3 +1236,6 @@ function selectFlag(flag){
       return String.fromCodePoint(0x1F3F3);
   }
 }
+
+usernameForm.addEventListener('submit', connect, true)
+//messageForm.addEventListener('submit', sendMessage, true)

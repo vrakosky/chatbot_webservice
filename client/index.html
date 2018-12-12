@@ -47,8 +47,23 @@
             messagesHtml = messagesHtml + '<i><small>' + dateForHuman + '</small></i> ' +
                 m.text + '<br>';
         }
+        let lastMessage = messages[messages.length - 1];
+        chatBotReponse(lastMessage.text);
         div.innerHTML = messagesHtml;
     }
+
+    //SIMPLE CHATBOT CLIENT
+    function chatBotReponse(text) {
+      if (text == "meteo") {
+          let reponse = "Il pleut : " + text;
+          sendMessageBot(reponse);
+      } else if (text == "hello") {
+          let reponse = "Hello You ";
+          sendMessageBot(reponse);
+      } 
+      else {
+          sendMessageBot(text);
+      }
 
     function clickPress(event) {
         // if user pressed [Enter]

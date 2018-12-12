@@ -48,8 +48,14 @@ Intelligent and interactive resume website (responsive) with a chatbot communica
 # Integration tests
 ## To run Curl-style integration tests --> you need to install curl, jq then run
 -  cd test
+### send a message with the terminal :
 -  curl -X POST -H "Content-Type: text/plain"  http://localhost:8080/api/new-message -d 'Hello there'
 - ./new-message "Your message"
+
+### Ask server to display ALL messages : 
+- curl http://localhost:8080/api/messages | jq . 
 - ./read-messages
+
+### You can also run java tests from directory 'server/src/tests/java' by :
 - ./gradlew test
 

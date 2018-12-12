@@ -1,1 +1,72 @@
-TODO
+<html>
+  <meta charset="utf-8"/>
+  <head>
+    <title> Test client for chat </title>
+  </head>
+
+<script>
+
+  function readMessages() {
+    // Run the async request and chain promises
+    // see https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
+    // TODO: The following code is a bit ugly, rewrite it using async/await if you wish so
+    fetch('http://localhost:8080/api/messages')
+      .then(
+        // Js will call the following  function when response arrives.
+        function (response) {
+          // returns a Promise
+          return response.json();
+        }
+      )
+      .then(
+         // Js will call this function when json parsing is finished
+        function(messages) {
+          return renderMessages(messages);
+        }
+      )
+      .catch(
+        function(error) {
+          console.log('Error ' + error);
+        }
+      );
+  }
+
+  // run readMessages every second 
+  setInterval(readMessages, 1000);
+
+  // loop over messages and update the corresponding div
+  function renderMessages(messages) {
+
+    let div = document.getElementById("div-with-messages");
+    let messagesHtml = "";
+    for (var i = 0; i < messages.length; i++) {
+      let m = messages[i];
+      // JSON cannot have a date object inside, so we should
+      // reconstruct a new Date from string stored inside JSON
+      let date = new Date(m.date);
+      let dateForHuman = date.toLocaleString();
+      messagesHtml = messagesHtml + '<i>' + dateForHuman + '</i> ' +
+        m.text + '<br>';
+    }
+    div.innerHTML = messagesHtml;
+  }
+
+
+</script>
+
+<body>
+
+  <h1> Messages </h1>
+  
+  <div id=div-with-messages>
+  	<!-- Here need to put JS code to display message with output()-->
+  </div>
+
+
+  <input type=text id=new>
+
+
+
+</body>
+
+</html>
